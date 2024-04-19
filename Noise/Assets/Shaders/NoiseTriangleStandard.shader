@@ -11,14 +11,13 @@ Shader "Custom/NoiseTriangleStandard"
     {
         Tags { "RenderType"="Opaque" }
         LOD 200
-
+        Cull Off
         CGPROGRAM
         // Physically based Standard lighting model, and enable shadows on all light types
-        #pragma surface surf Standard fullforwardshadows
-        #pragma vertex vert
+        #pragma surface surf Standard vertex:vert fullforwardshadows
         // Use shader model 3.0 target, to get nicer looking lighting
-        #pragma target 3.0
-
+        #pragma target 4.6
+        #include "UnityCG.cginc"
         sampler2D _MainTex;
 
         struct Input
@@ -26,20 +25,28 @@ Shader "Custom/NoiseTriangleStandard"
             float2 uv_MainTex;
         };
         int nbInstance;
+        #ifdef SHADER_API_D3D11
         StructuredBuffer<float3> particleBuffer;
+        #endif
         half _Glossiness;
         half _Metallic;
         fixed4 _Color;
-
-        // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
-        // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
-        // #pragma instancing_options assumeuniformscaling
-        UNITY_INSTANCING_BUFFER_START(Props)
-            // put more per-instance properties here
-        UNITY_INSTANCING_BUFFER_END(Props)
-        void vert(uint vertex_id : SV_VertexID, inout appdata_base o)
+        
+        struct appdata{
+            float4 vertex : POSITION;
+            float3 normal : NORMAL;
+            float4 texcoord : TEXCOORD0;
+            float4 texcoord1 : TEXCOORD1;
+            float4 texcoord2 : TEXCOORD2;
+            uint id : SV_VertexID;
+            uint inst : SV_instanceID;
+         };
+        
+        void vert(inout appdata o)
         {
-            o.vertex = UnityObjectToClipPos(float4(particleBuffer[vertex_id].xyz * 100.0 , 1.0));
+            #ifdef SHADER_API_D3D11
+            o.vertex = UnityObjectToClipPos(float4(particleBuffer[o.inst + o.id * nbInstance].xyz * 75.0 , 1.0));
+            #endif
         }
         void surf (Input IN, inout SurfaceOutputStandard o)
         {

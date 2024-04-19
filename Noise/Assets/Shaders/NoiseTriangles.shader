@@ -42,7 +42,7 @@ Shader "Unlit/NoiseTriangles"
             {
                 PS_INPUT o = (PS_INPUT)0;
                 //o.instance = vertex_id;
-                o.position = UnityObjectToClipPos(float4(particleBuffer[vertex_id].xyz * 100.0 , 1.0));
+                o.position = UnityObjectToClipPos(float4(particleBuffer[vertex_id].xyz * 50.0 , 1.0));
                 o.size = 2;
                 return o;
             }
@@ -63,7 +63,7 @@ Shader "Unlit/NoiseTriangles"
             fixed4 frag (PS_INPUT i) : SV_Target
             {
                 // sample the texture
-                fixed4 col = float4(1.0, 1.0, 1.0, 1.0);
+                fixed4 col = float4(1.0, 1.0, 1.0, 0.5);
                 // apply fog
                 return col;
             }

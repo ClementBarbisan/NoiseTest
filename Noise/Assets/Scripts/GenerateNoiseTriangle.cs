@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class GenerateNoiseTriangle : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class GenerateNoiseTriangle : MonoBehaviour
             _bufferAudio = new ComputeBuffer(_dataAudio.Length / 3, 3 * sizeof(float));
             _dataBuffer = new Vector3[_dataAudio.Length / 3];
             _noiseTriangle.SetBuffer("particleBuffer", _bufferAudio);
-            _noiseTriangle.SetInt("nbInstance", _dataAudio.Length / 3);
+            _noiseTriangle.SetInt("nbInstance", _dataAudio.Length / 3 / 3);
         }
 
         if (_dataAudio != null && _dataCollected)
@@ -38,7 +39,9 @@ public class GenerateNoiseTriangle : MonoBehaviour
             Graphics.DrawProcedural(
                 _noiseTriangle,
                 new Bounds(Vector3.zero, Vector3.one * 5),
-                MeshTopology.Triangles, _dataAudio.Length / 3);
+                MeshTopology.Triangles,  _dataAudio.Length / 3, 1,
+                null, null,
+                ShadowCastingMode.TwoSided, true, gameObject.layer);
         }
     }
 
